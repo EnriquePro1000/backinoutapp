@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Security\User;
 use Carbon\Carbon;
 
-class RegisterUserController extends Controller {
+class CreateUserController extends Controller {
 
     public function create(Request $request) {
         $RegisterDate = Carbon::createFromFormat('Y-m-d', $request->registerdate);

@@ -14,6 +14,23 @@ class UserController extends Controller {
                     'users' => $this->userList()
         ]);
     }
+    
+    public function getUser($id) {
+        $user = User::findOrFail($id);
+        if($user["othername"] == null){
+            $user["othername"] = "";
+        }
+        return response()->json([
+                    'typeid' => $user["typeid_id"],
+                    'numberid' => $user['numberid'],
+                    'areaid' => $user['area_id'],
+                    'countryid' => $user['country_id'],
+                    'firstname' => $user['firstname'],
+                    'othername' => $user['othername'],
+                    'flastname' => $user['flastname'],
+                    'slastname' => $user['slastname'],
+            ]);
+    }
 
     public function deleteUser($id) {
         if (User::where("id", $id)->count() > 0) {

@@ -23,22 +23,26 @@ class Controller extends BaseController {
         $this->guard = "api";
     }
 
-     public function createEmail($request) {
+    public function createEmail($request) {
         $fn = str_replace(" ", "", $request->firstname);
         $fl = str_replace(" ", "", $request->flastname);
         $ct = Country::findOrFail($request->countryid);
         $email = strtolower(trim($fn)) . "." . strtolower(trim($fl));
         $count = User::where("email", "LIKE", '%' . $email . '%')->count();
-        if ($count > 0) {
-            $email = strtolower($fn) . "." . strtolower($fl) . "." . ($count + 1) . "@cidenet.com.";
-            $exist = User::where("email", "LIKE", '%' . $email . '%')->count();
-            if ($exist > 0) {
-                $email = strtolower($fn) . "." . strtolower($fl) . "." . ($count + 1) . ($count + 1) . "@cidenet.com.";
-                return $email . $ct["abbrev"];
-            }
-            return $email . $ct["abbrev"];
-        }
-        return $email . "@cidenet.com." . $ct["abbrev"];
-    }
 
+        if ($count == 0) {
+            $email = strtolower($fn) . "." . strtolower($fl) . "@cidenet.com." . $ct["abbrev"];
+            return $email;
+        }
+        
+        $email = strtolower($fn) . "." . strtolower($fl) . "." . ($count + 1) . "@cidenet.com.";
+        $exist = User::where("email", "LIKE", '%' . $email . '%')->count();
+
+        while ($exist != 0) {
+            $email = strtolower($fn) . "." . strtolower($fl) . "." . ($count) . "@cidenet.com.";
+            $exist = User::where("email", "LIKE", '%' . $email . '%')->count();
+            $count++;
+        }
+        return $email . $ct["abbrev"];
+    }
 }

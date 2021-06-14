@@ -65,7 +65,7 @@ class User extends Authenticatable implements JWTSubject {   //install tymon: co
     }
     
     public function country(){
-        $this->hasOne("App\Models\Security\Country", "id", "country_id");
+        $this->belongsTo("App\Models\Security\Country","id","country_id");
     }
 
 }
