@@ -23,6 +23,7 @@ class User extends Authenticatable implements JWTSubject {   //install tymon: co
         'country_id',
         'area_id',
         'typeid_id',
+        'role_id',
         'numberid',
         'firstname',
         'othername',
@@ -61,6 +62,10 @@ class User extends Authenticatable implements JWTSubject {   //install tymon: co
 
     public function getJWTIdentifier() {
         return $this->getKey();
+    }
+    
+    public function country(){
+        $this->hasOne("App\Models\Security\Country", "id", "country_id");
     }
 
 }
