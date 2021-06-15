@@ -45,4 +45,13 @@ class Controller extends BaseController {
         }
         return $email . $ct["abbrev"];
     }
+    
+    public function userList() {
+        return User::select('users.*', 'countries.name as country_name', 'areas.name as area_name','typeid.abbrev as typeid_abbrev')
+                        ->join('countries', 'countries.id', '=', 'users.country_id')
+                        ->join('areas', 'areas.id', '=', 'users.area_id')
+                        ->join('typeid', 'typeid.id', '=', 'users.typeid_id')
+                        ->where("users.id", "!=", auth($this->guard)->id())
+                        ->get();
+    }
 }

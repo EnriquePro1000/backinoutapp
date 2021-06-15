@@ -18,15 +18,23 @@ class LoginController extends Controller {
     public function login(Request $request) {
         if (User::where("email", $request->email)->count() == 0) {
             return response()->json([
-                        'status' => "204",
-                        'result' => "El email no existe"
+                        'data' => [
+                            'status' => "204",
+                            'type' => "error",
+                            'detail_en' => "The email does not exist",
+                            'detail_es' => "El email no existe"
+                        ]
             ]);
         }
         $credencials = $request->only("email", "password");
         if (!$token = auth($this->guard)->attempt($credencials)) {
             return response()->json([
-                        'status' => "204",
-                        'result' => "Password incorrecta"
+                        'data' => [
+                            'status' => "204",
+                            'type' => "error",
+                            'detail_en' => "Incorrect password",
+                            'detail_es' => "Contraseña incorrecta"
+                        ]
             ]);
         }
         $apiToken["user_id"] = auth($this->guard)->id();
@@ -42,25 +50,27 @@ class LoginController extends Controller {
         }
 
         return response()->json([
-                    'status' => "200",
-                    'token' => $token,
-                    'user'   => User::findOrFail(auth($this->guard)->id()),
-                    'typeids'=> TypeId::all(),
-                    'areas'=> Area::all(),
-                    'countries'=> Country::all(),
-                    'users'=> User::select('users.*', 'countries.name as country_name','typeid.abbrev as typeid_abbrev')
-                              ->join('countries', 'countries.id', '=', 'users.country_id')
-                              ->join('typeid', 'typeid.id', '=', 'users.typeid_id')
-                              ->where("users.id","!=",auth($this->guard)->id())
-                              ->get()
-                ]);
+                    'data' => [
+                        'status' => "200",
+                        'token' => $token,
+                        'user' => User::findOrFail(auth($this->guard)->id()),
+                        'typeids' => TypeId::all(),
+                        'areas' => Area::all(),
+                        'countries' => Country::all(),
+                        'users' => $this->userList(),
+                    ]
+        ]);
     }
 
     public function logout() {
         auth($this->guard)->logout();
         return response()->json([
-                    'status' => "200",
-                    'result' => 'Successfully loged out'
+                    'data' => [
+                        'status' => "200",
+                        'type' => "success",
+                        'detail_en' => "Successfully loged out",
+                        'detail_es' => "Deslogueado correctamente"
+                    ]
         ]);
     }
 
@@ -71,4 +81,5 @@ class LoginController extends Controller {
                     'expires_in' => auth($this->guard)->factory()->getTTL() //6 hrs
         ]);
     }
+
 }
